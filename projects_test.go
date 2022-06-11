@@ -265,8 +265,8 @@ func TestProjectsService_CreateProject(t *testing.T) {
 		})
 
 		opt := &CreateProjectOptions{
-			Name: String("got-dev"),
-			Members: []*string{String("eyotang"), String("tangyongqiang")}
+			Name:    String("got-dev"),
+			Members: []*string{String("eyotang"), String("tangyongqiang")},
 		}
 		projects, _, err := client.Projects.CreateProject(opt)
 		So(err, ShouldBeNil)
