@@ -203,7 +203,12 @@ func TestProjectsService_GetProject(t *testing.T) {
 			Description: "",
 			Members:     []string{"eyotang", "swarm"},
 			Branches: []Branch{
-				{ID: "client", Name: "Client", Workflow: "6", Paths: []string{"//xxx.Mainline/abvc_ArtDev/Assets/...", "//xxx.Mainline/abvc_ArtDev/Assets/Scripts/..."}},
+				{
+					ID:       "client",
+					Name:     "Client",
+					Workflow: "6",
+					Paths:    []string{"//xxx.Mainline/abvc_ArtDev/Assets/...", "//xxx.Mainline/abvc_ArtDev/Assets/Scripts/..."},
+				},
 			},
 		}
 
@@ -259,7 +264,10 @@ func TestProjectsService_CreateProject(t *testing.T) {
 			}`)
 		})
 
-		opt := &CreateProjectOptions{Name: String("got-dev"), Members: []*string{String("eyotang"), String("tangyongqiang")}}
+		opt := &CreateProjectOptions{
+			Name: String("got-dev"),
+			Members: []*string{String("eyotang"), String("tangyongqiang")}
+		}
 		projects, _, err := client.Projects.CreateProject(opt)
 		So(err, ShouldBeNil)
 
@@ -347,15 +355,16 @@ func TestProjectsService_CreateProjectWithBranch(t *testing.T) {
 			Members: []*string{String("eyotang"), String("tangyongqiang")},
 			Branches: []*BranchOptions{
 				{
-					Name:     "Client",
-					Workflow: "6",
-					Paths:    "//xxx.Mainline/abvc_ArtDev/Assets/...\n//xxx.Mainline/abvc_ArtDev/Assets/Scripts/...",
+					Name:     String("Client"),
+					Workflow: String("6"),
+					Paths:    String("//xxx.Mainline/abvc_ArtDev/Assets/...\n//xxx.Mainline/abvc_ArtDev/Assets/Scripts/..."),
+					Defaults: new(DefaultsOptions),
 				},
 			},
 		}
 		reviewers := make(map[string]*ReviewerOptions)
-		reviewers["eyotang"] = &ReviewerOptions{Required: "true"}
-		reviewers["tangyongqiang"] = &ReviewerOptions{Required: "false"}
+		reviewers["eyotang"] = &ReviewerOptions{Required: String("true")}
+		reviewers["tangyongqiang"] = &ReviewerOptions{Required: String("false")}
 		opt.Branches[0].Defaults.Reviewers = reviewers
 		projects, _, err := client.Projects.CreateProject(opt)
 		So(err, ShouldBeNil)
@@ -455,15 +464,16 @@ func TestProjectsService_UpdateProject(t *testing.T) {
 			Members: []*string{String("eyotang"), String("tangyongqiang")},
 			Branches: []*BranchOptions{
 				{
-					Name:     "Client",
-					Workflow: "6",
-					Paths:    "//xxx.Mainline/abvc_ArtDev/Assets/...\n//xxx.Mainline/abvc_ArtDev/Assets/Scripts/...",
+					Name:     String("Client"),
+					Workflow: String("6"),
+					Paths:    String("//xxx.Mainline/abvc_ArtDev/Assets/...\n//xxx.Mainline/abvc_ArtDev/Assets/Scripts/..."),
+					Defaults: new(DefaultsOptions),
 				},
 			},
 		}
 		reviewers := make(map[string]*ReviewerOptions)
-		reviewers["eyotang"] = &ReviewerOptions{Required: "true"}
-		reviewers["tangyongqiang"] = &ReviewerOptions{Required: "false"}
+		reviewers["eyotang"] = &ReviewerOptions{Required: String("true")}
+		reviewers["tangyongqiang"] = &ReviewerOptions{Required: String("false")}
 		opt.Branches[0].Defaults.Reviewers = reviewers
 		projects, _, err := client.Projects.UpdateProject("got-dev", opt)
 		So(err, ShouldBeNil)
@@ -513,15 +523,16 @@ func TestProjectsService_UpdateProjectWithUnknownUser(t *testing.T) {
 			Members: []*string{String("eyotang"), String("tangyongqiang")},
 			Branches: []*BranchOptions{
 				{
-					Name:     "Client",
-					Workflow: "6",
-					Paths:    "//xxx.Mainline/abvc_ArtDev/Assets/...\n//xxx.Mainline/abvc_ArtDev/Assets/Scripts/...",
+					Name:     String("Client"),
+					Workflow: String("6"),
+					Paths:    String("//xxx.Mainline/abvc_ArtDev/Assets/...\n//xxx.Mainline/abvc_ArtDev/Assets/Scripts/..."),
+					Defaults: new(DefaultsOptions),
 				},
 			},
 		}
 		reviewers := make(map[string]*ReviewerOptions)
-		reviewers["eyotang"] = &ReviewerOptions{Required: "true"}
-		reviewers["tangyongqiang"] = &ReviewerOptions{Required: "false"}
+		reviewers["eyotang"] = &ReviewerOptions{Required: String("true")}
+		reviewers["tangyongqiang"] = &ReviewerOptions{Required: String("false")}
 		opt.Branches[0].Defaults.Reviewers = reviewers
 		_, _, err := client.Projects.UpdateProject("got-dev", opt)
 		So(err, ShouldNotBeNil)
@@ -543,16 +554,17 @@ func TestProjectsService_UpdateProjectReviewer(t *testing.T) {
 			Members: []*string{String("swarm"), String("root")},
 			Branches: []*BranchOptions{
 				{
-					ID:       "client",
-					Name:     "Client",
-					Workflow: "6",
-					Paths:    "//Elrond.Mainline/Elrond_ArtDev/Assets/...\n//Elrond.Mainline/Elrond_ArtDev/Assets/Scripts/...",
+					ID:       String("client"),
+					Name:     String("Client"),
+					Workflow: String("6"),
+					Paths:    String("//Elrond.Mainline/Elrond_ArtDev/Assets/...\n//Elrond.Mainline/Elrond_ArtDev/Assets/Scripts/..."),
+					Defaults: new(DefaultsOptions),
 				},
 			},
 		}
 		reviewers := make(map[string]*ReviewerOptions, 2)
-		reviewers["lejiajun"] = &ReviewerOptions{Required: "true"}
-		reviewers["swarm"] = &ReviewerOptions{Required: "false"}
+		reviewers["lejiajun"] = &ReviewerOptions{Required: String("true")}
+		reviewers["swarm"] = &ReviewerOptions{Required: String("false")}
 		opt.Branches[0].Defaults.Reviewers = reviewers
 		projects, _, err := client.Projects.UpdateProject("got-dev", opt)
 		So(err, ShouldBeNil)

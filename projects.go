@@ -14,8 +14,8 @@ type ProjectsService struct {
 }
 
 type ListProjectsOptions struct {
-	Fields   string `url:"fields:omitempty" query:"fields"`
-	Workflow string `url:"workflow:omitempty" query:"fields"`
+	Fields   *string `query:"fields"`
+	Workflow *string `query:"fields"`
 }
 
 // Project represents a project in swarm.
@@ -92,23 +92,25 @@ func (s *ProjectsService) GetProject(pid interface{}, options ...RequestOptionFu
 }
 
 type CreateProjectOptions struct {
-	Name     *string          `url:"name" query:"name"`
-	Members  []*string        `url:"members" query:"members"`
-	Branches []*BranchOptions `url:"branches,omitempty" query:"branches"`
+	Name     *string          `query:"name"`
+	Members  []*string        `query:"members"`
+	Branches []*BranchOptions `query:"branches"`
 }
 
 type BranchOptions struct {
-	ID       string `url:"id,omitempty" query:"id"`
-	Name     string `url:"name" query:"name"`
-	Workflow string `url:"workflow" query:"workflow"`
-	Paths    string `url:"paths" query:"paths"`
-	Defaults struct {
-		Reviewers map[string]*ReviewerOptions `url:"reviewers" query:"reviewers"`
-	} `url:"defaults" query:"defaults"`
+	ID       *string          `query:"id"`
+	Name     *string          `query:"name"`
+	Workflow *string          `query:"workflow"`
+	Paths    *string          `query:"paths"`
+	Defaults *DefaultsOptions `query:"defaults"`
+}
+
+type DefaultsOptions struct {
+	Reviewers map[string]*ReviewerOptions `query:"reviewers"`
 }
 
 type ReviewerOptions struct {
-	Required string `url:"required" query:"required"`
+	Required *string `query:"required"`
 }
 
 func (s *ProjectsService) CreateProject(opt *CreateProjectOptions, options ...RequestOptionFunc) (*Project, *Response, error) {
@@ -146,9 +148,9 @@ func (s *ProjectsService) DeleteProject(pid interface{}, options ...RequestOptio
 }
 
 type UpdateProjectOptions struct {
-	Name     *string          `url:"name,omitempty" query:"name"`
-	Members  []*string        `url:"members,omitempty" query:"members"`
-	Branches []*BranchOptions `url:"branches,omitempty" query:"branches"`
+	Name     *string          `query:"name"`
+	Members  []*string        `query:"members"`
+	Branches []*BranchOptions `query:"branches"`
 }
 
 func (s *ProjectsService) UpdateProject(pid interface{}, opt *UpdateProjectOptions, options ...RequestOptionFunc) (*Project, *Response, error) {
