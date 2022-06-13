@@ -554,11 +554,12 @@ func TestProjectsService_UpdateProjectReviewer(t *testing.T) {
 			Members: []*string{String("swarm"), String("root")},
 			Branches: []*BranchOptions{
 				{
-					ID:       String("client"),
-					Name:     String("Client"),
-					Workflow: String("6"),
-					Paths:    String("//Elrond.Mainline/Elrond_ArtDev/Assets/...\n//Elrond.Mainline/Elrond_ArtDev/Assets/Scripts/..."),
-					Defaults: new(DefaultsOptions),
+					ID:         String("client"),
+					Name:       String("Client"),
+					Workflow:   String("6"),
+					Paths:      String("//Elrond.Mainline/Elrond_ArtDev/Assets/...\n//Elrond.Mainline/Elrond_ArtDev/Assets/Scripts/..."),
+					Defaults:   new(DefaultsOptions),
+					Moderators: []*string{String("swarm"), String("lejiajun")},
 				},
 			},
 		}
@@ -576,10 +577,11 @@ func TestProjectsService_UpdateProjectReviewer(t *testing.T) {
 			Members:     []string{"root", "swarm"},
 			Branches: []Branch{
 				{
-					ID:       "client",
-					Name:     "Client",
-					Workflow: "6",
-					Paths:    []string{"//Elrond.Mainline/Elrond_ArtDev/Assets/...", "//Elrond.Mainline/Elrond_ArtDev/Assets/Scripts/..."},
+					ID:         "client",
+					Name:       "Client",
+					Workflow:   "6",
+					Paths:      []string{"//Elrond.Mainline/Elrond_ArtDev/Assets/...", "//Elrond.Mainline/Elrond_ArtDev/Assets/Scripts/..."},
+					Moderators: []string{"swarm", "lejiajun"},
 				},
 			},
 		}

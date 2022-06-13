@@ -40,6 +40,7 @@ type Branch struct {
 			Users map[string]interface{} `json:"users"`
 		} `json:"reviewers"`
 	} `json:"defaults"`
+	Moderators []string `json:"moderators"`
 }
 
 func (p Project) String() string {
@@ -98,11 +99,12 @@ type CreateProjectOptions struct {
 }
 
 type BranchOptions struct {
-	ID       *string          `query:"id"`
-	Name     *string          `query:"name"`
-	Workflow *string          `query:"workflow"`
-	Paths    *string          `query:"paths"`
-	Defaults *DefaultsOptions `query:"defaults"`
+	ID         *string          `query:"id"`
+	Name       *string          `query:"name"`
+	Workflow   *string          `query:"workflow"`
+	Paths      *string          `query:"paths"`
+	Defaults   *DefaultsOptions `query:"defaults"`
+	Moderators []*string        `query:"moderators"`
 }
 
 type DefaultsOptions struct {
