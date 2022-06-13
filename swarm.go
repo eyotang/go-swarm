@@ -80,7 +80,8 @@ type Client struct {
 	tokenLock sync.RWMutex
 
 	// Services used for talking to different parts of the Swarm API.
-	Projects *ProjectsService
+	Workflows *WorkflowService
+	Projects  *ProjectsService
 }
 
 // PageInfo Paging common input parameter structure
@@ -138,6 +139,7 @@ func newClient(options ...ClientOptionFunc) (*Client, error) {
 
 	// Create all the public services.
 	c.Projects = &ProjectsService{client: c}
+	c.Workflows = &WorkflowService{client: c}
 	return c, nil
 }
 
