@@ -36,9 +36,7 @@ type Branch struct {
 	Workflow string   `json:"workflow"`
 	Paths    []string `json:"paths"`
 	Defaults struct {
-		Reviewers struct {
-			Users map[string]interface{} `json:"users"`
-		} `json:"reviewers"`
+		Reviewers interface{} `json:"reviewers"`
 	} `json:"defaults"`
 	Moderators []string `json:"moderators"`
 }

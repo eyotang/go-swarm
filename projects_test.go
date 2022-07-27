@@ -134,16 +134,16 @@ func TestProjectsService_ListProjects(t *testing.T) {
 		users := make(map[string]interface{})
 		users["eyotang"] = []interface{}{}
 		users["tangyongqiang"] = []interface{}{}
-		want[0].Branches[0].Defaults.Reviewers.Users = users
+		want[0].Branches[0].Defaults.Reviewers = users
 
 		users = make(map[string]interface{})
 		users["eyotang"] = map[string]interface{}{"required": true}
 		users["tangyongqiang"] = []interface{}{}
-		want[1].Branches[0].Defaults.Reviewers.Users = users
+		want[1].Branches[0].Defaults.Reviewers = users
 
 		users = make(map[string]interface{})
 		users["tangyongqiang"] = []interface{}{}
-		want[1].Branches[1].Defaults.Reviewers.Users = users
+		want[1].Branches[1].Defaults.Reviewers = users
 
 		So(projects, ShouldResemble, want)
 	})
@@ -215,7 +215,7 @@ func TestProjectsService_GetProject(t *testing.T) {
 		users := make(map[string]interface{})
 		users["eyotang"] = map[string]interface{}{"required": true}
 		users["tangyongqiang"] = []interface{}{}
-		want.Branches[0].Defaults.Reviewers.Users = users
+		want.Branches[0].Defaults.Reviewers = users
 
 		So(projects, ShouldResemble, want)
 	})
@@ -386,7 +386,7 @@ func TestProjectsService_CreateProjectWithBranch(t *testing.T) {
 		users := make(map[string]interface{})
 		users["eyotang"] = map[string]interface{}{"required": true}
 		users["tangyongqiang"] = []interface{}{}
-		want.Branches[0].Defaults.Reviewers.Users = users
+		want.Branches[0].Defaults.Reviewers = users
 
 		So(projects, ShouldResemble, want)
 	})
@@ -495,7 +495,109 @@ func TestProjectsService_UpdateProject(t *testing.T) {
 		users := make(map[string]interface{})
 		users["eyotang"] = map[string]interface{}{"required": true}
 		users["tangyongqiang"] = []interface{}{}
-		want.Branches[0].Defaults.Reviewers.Users = users
+		want.Branches[0].Defaults.Reviewers = map[string]interface{}{"users": users}
+		want.Branches[0].Moderators = []string{}
+
+		So(projects, ShouldResemble, want)
+	})
+}
+
+func TestProjectsService_UpdateProjectOnlyModerators(t *testing.T) {
+	Convey("test ProjectsService_UpdateProjectOnlyModerators", t, func() {
+		mux, server, client := setup(t)
+		defer teardown(server)
+
+		mux.HandleFunc("/api/v9/projects/got-dev", func(w http.ResponseWriter, r *http.Request) {
+			testMethod(t, r, http.MethodPatch)
+			fmt.Fprint(w, `{
+				"project": {
+					"id": "got-dev",
+					"branches": [
+						{
+						"id": "client",
+						"name": "Client",
+						"workflow": "6",
+						"paths": [
+							"//xxx.Mainline/abvc_ArtDev/Assets/...",
+							"//xxx.Mainline/abvc_ArtDev/Assets/Scripts/..."
+						],
+						"defaults": {
+							"reviewers": []
+						},
+						"minimumUpVotes": null,
+						"retainDefaultReviewers": false,
+						"moderators": ["eyotang"],
+						"moderators-groups": []
+					}
+					],
+					"defaults": {
+						"reviewers": []
+					},
+					"deleted": false,
+					"deploy": {
+						"enabled": false,
+						"url": null
+					},
+					"description": null,
+					"emailFlags": [],
+					"jobview": null,
+					"members": [
+						"eyotang",
+						"tangyongqiang"
+					],
+					"minimumUpVotes": null,
+					"name": "Got-dev",
+					"owners": [],
+					"private": false,
+					"retainDefaultReviewers": false,
+					"subgroups": [],
+					"tests": {
+						"enabled": false,
+						"url": null
+					},
+					"workflow": null
+				},
+				"readme": "",
+				"mode": "add"
+			}`)
+		})
+
+		opt := &UpdateProjectOptions{
+			Name:    String("got-dev"),
+			Members: []*string{String("eyotang"), String("tangyongqiang")},
+			Branches: []*BranchOptions{
+				{
+					Name:     String("Client"),
+					Workflow: String("6"),
+					Paths:    String("//xxx.Mainline/abvc_ArtDev/Assets/...\n//xxx.Mainline/abvc_ArtDev/Assets/Scripts/..."),
+					Defaults: new(DefaultsOptions),
+				},
+			},
+		}
+		reviewers := make(map[string]*ReviewerOptions)
+		reviewers["eyotang"] = &ReviewerOptions{Required: String("true")}
+		reviewers["tangyongqiang"] = &ReviewerOptions{Required: String("false")}
+		opt.Branches[0].Defaults.Reviewers = reviewers
+		projects, _, err := client.Projects.UpdateProject("got-dev", opt)
+		So(err, ShouldBeNil)
+
+		want := &Project{
+			ID:          "got-dev",
+			Name:        "Got-dev",
+			Description: "",
+			Members:     []string{"eyotang", "tangyongqiang"},
+			Branches: []Branch{
+				{
+					ID:       "client",
+					Name:     "Client",
+					Workflow: "6",
+					Paths:    []string{"//xxx.Mainline/abvc_ArtDev/Assets/...", "//xxx.Mainline/abvc_ArtDev/Assets/Scripts/..."},
+				},
+			},
+		}
+
+		want.Branches[0].Defaults.Reviewers = []interface{}{}
+		want.Branches[0].Moderators = []string{"eyotang"}
 
 		So(projects, ShouldResemble, want)
 	})
@@ -588,7 +690,7 @@ func TestProjectsService_UpdateProjectReviewer(t *testing.T) {
 		users := make(map[string]interface{})
 		users["lejiajun"] = map[string]interface{}{"required": true}
 		users["swarm"] = []interface{}{}
-		want.Branches[0].Defaults.Reviewers.Users = users
+		want.Branches[0].Defaults.Reviewers = users
 
 		So(projects, ShouldResemble, want)
 	})
