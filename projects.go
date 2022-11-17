@@ -91,9 +91,10 @@ func (s *ProjectsService) GetProject(pid interface{}, options ...RequestOptionFu
 }
 
 type CreateProjectOptions struct {
-	Name     *string          `query:"name"`
-	Members  []*string        `query:"members"`
-	Branches []*BranchOptions `query:"branches"`
+	Name      *string          `query:"name"`
+	Members   []*string        `query:"members"`
+	SubGroups []*string        `query:"subgroups"`
+	Branches  []*BranchOptions `query:"branches"`
 }
 
 type BranchOptions struct {
