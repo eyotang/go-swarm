@@ -134,16 +134,19 @@ func TestProjectsService_ListProjects(t *testing.T) {
 		users := make(map[string]interface{})
 		users["eyotang"] = []interface{}{}
 		users["tangyongqiang"] = []interface{}{}
-		want[0].Branches[0].Defaults.Reviewers = users
+		want[0].Branches[0].Defaults.Reviewers = map[string]interface{}{"users": users}
+		want[0].Branches[0].Moderators = []string{}
 
 		users = make(map[string]interface{})
 		users["eyotang"] = map[string]interface{}{"required": true}
 		users["tangyongqiang"] = []interface{}{}
-		want[1].Branches[0].Defaults.Reviewers = users
+		want[1].Branches[0].Defaults.Reviewers = map[string]interface{}{"users": users}
+		want[1].Branches[0].Moderators = []string{}
 
 		users = make(map[string]interface{})
 		users["tangyongqiang"] = []interface{}{}
-		want[1].Branches[1].Defaults.Reviewers = users
+		want[1].Branches[1].Defaults.Reviewers = map[string]interface{}{"users": users}
+		want[1].Branches[1].Moderators = []string{"eyotang", "tangyq"}
 
 		So(projects, ShouldResemble, want)
 	})
@@ -215,7 +218,8 @@ func TestProjectsService_GetProject(t *testing.T) {
 		users := make(map[string]interface{})
 		users["eyotang"] = map[string]interface{}{"required": true}
 		users["tangyongqiang"] = []interface{}{}
-		want.Branches[0].Defaults.Reviewers = users
+		want.Branches[0].Defaults.Reviewers = map[string]interface{}{"users": users}
+		want.Branches[0].Moderators = []string{}
 
 		So(projects, ShouldResemble, want)
 	})

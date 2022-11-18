@@ -149,9 +149,10 @@ func (s *ProjectsService) DeleteProject(pid interface{}, options ...RequestOptio
 }
 
 type UpdateProjectOptions struct {
-	Name     *string          `query:"name"`
-	Members  []*string        `query:"members"`
-	Branches []*BranchOptions `query:"branches"`
+	Name      *string          `query:"name"`
+	Members   []*string        `query:"members"`
+	SubGroups []*string        `query:"subgroups"`
+	Branches  []*BranchOptions `query:"branches"`
 }
 
 func (s *ProjectsService) UpdateProject(pid interface{}, opt *UpdateProjectOptions, options ...RequestOptionFunc) (*Project, *Response, error) {
