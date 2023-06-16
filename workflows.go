@@ -101,7 +101,7 @@ func (s *WorkflowService) SetGlobalExclusions(groups []string, users []string) (
 
 	swarmGroups := make([]string, 0)
 	for _, group := range groups {
-		swarmGroups = append(swarmGroups, "swarm-group-"+group)
+		swarmGroups = append(swarmGroups, addPrefix(group, "swarm-group-"))
 	}
 	workflow.GroupExclusion.Rule = swarmGroups
 	workflow.UserExclusion.Rule = users

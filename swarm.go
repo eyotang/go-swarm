@@ -552,3 +552,12 @@ func parseError(raw interface{}) string {
 		return fmt.Sprintf("failed to parse unexpected error type: %T", raw)
 	}
 }
+
+func addPrefix(s, cutset string) (r string) {
+	r = strings.TrimSpace(s)
+	if strings.HasPrefix(r, cutset) {
+		return
+	}
+	r = cutset + r
+	return
+}
