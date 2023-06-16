@@ -6,7 +6,6 @@ import (
 	"encoding/json"
 	"fmt"
 	"io"
-	"io/ioutil"
 	"math/rand"
 	"net/http"
 	"net/url"
@@ -495,7 +494,7 @@ func CheckResponse(r *http.Response) error {
 	}
 
 	errorResponse := &ErrorResponse{Response: r}
-	data, err := ioutil.ReadAll(r.Body)
+	data, err := io.ReadAll(r.Body)
 	if err == nil && data != nil {
 		errorResponse.Body = data
 
@@ -511,23 +510,24 @@ func CheckResponse(r *http.Response) error {
 }
 
 // Format:
-// {
-//     "message": {
-//         "<property-name>": [
-//             "<error-message>",
-//             "<error-message>",
-//             ...
-//         ],
-//         "<embed-entity>": {
-//             "<property-name>": [
-//                 "<error-message>",
-//                 "<error-message>",
-//                 ...
-//             ],
-//         }
-//     },
-//     "error": "<error-message>"
-// }
+//
+//	{
+//	    "message": {
+//	        "<property-name>": [
+//	            "<error-message>",
+//	            "<error-message>",
+//	            ...
+//	        ],
+//	        "<embed-entity>": {
+//	            "<property-name>": [
+//	                "<error-message>",
+//	                "<error-message>",
+//	                ...
+//	            ],
+//	        }
+//	    },
+//	    "error": "<error-message>"
+//	}
 func parseError(raw interface{}) string {
 	switch raw := raw.(type) {
 	case string:

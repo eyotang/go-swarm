@@ -2,6 +2,7 @@ package swarm
 
 import (
 	"fmt"
+	"github.com/hashicorp/go-retryablehttp"
 	"net/http"
 )
 
@@ -15,32 +16,32 @@ type ListWorkflowsOptions struct {
 }
 
 type Workflow struct {
-	ID          uint     `json:"id"`
-	Name        string   `json:"name"`
-	Description string   `json:"description"`
-	Shared      bool     `json:"shared"`
-	Owners      []string `json:"owners"`
+	ID          uint     `json:"id" query:"-"`
+	Name        string   `json:"name" query:"name"`
+	Description string   `json:"description" query:"description"`
+	Shared      bool     `json:"shared" query:"shared"`
+	Owners      []string `json:"owners" query:"owners"`
 	// review rules
-	OnSubmit       OnSubmit   `json:"on_submit"`
-	EndRules       EndRule    `json:"end_rules"`
-	AutoApprove    ReviewRule `json:"auto_approve"`
-	CountedVotes   ReviewRule `json:"counted_votes"`
-	GroupExclusion ReviewRule `json:"group_exclusions"`
-	UserExclusion  ReviewRule `json:"user_exclusions"`
+	OnSubmit       OnSubmit   `json:"on_submit" query:"on_submit"`
+	EndRules       EndRule    `json:"end_rules" query:"end_rules"`
+	AutoApprove    ReviewRule `json:"auto_approve" query:"auto_approve"`
+	CountedVotes   ReviewRule `json:"counted_votes" query:"counted_votes"`
+	GroupExclusion ReviewRule `json:"group_exclusions" query:"group_exclusions"`
+	UserExclusion  ReviewRule `json:"user_exclusions" query:"user_exclusions"`
 }
 
 type ReviewRule struct {
-	Rule interface{} `json:"rule"`
-	Mode string      `json:"mode"`
+	Rule interface{} `json:"rule" query:"rule"`
+	Mode string      `json:"mode" query:"mode"`
 }
 
 type OnSubmit struct {
-	WithReview    ReviewRule `json:"with_review"`
-	WithoutReview ReviewRule `json:"without_review"`
+	WithReview    ReviewRule `json:"with_review" query:"with_review"`
+	WithoutReview ReviewRule `json:"without_review" query:"without_review"`
 }
 
 type EndRule struct {
-	Update ReviewRule `json:"update"`
+	Update ReviewRule `json:"update" query:"update"`
 }
 
 func (w Workflow) String() string {
@@ -70,11 +71,11 @@ func (s *WorkflowService) ListWorkflows(opt *ListWorkflowsOptions, options ...Re
 }
 
 func (s *WorkflowService) GetWorkflow(pid interface{}, options ...RequestOptionFunc) (*Workflow, *Response, error) {
-	project, err := parseID(pid)
+	flowId, err := parseID(pid)
 	if err != nil {
 		return nil, nil, err
 	}
-	u := fmt.Sprintf("workflows/%s", PathEscape(project))
+	u := fmt.Sprintf("workflows/%s", PathEscape(flowId))
 
 	req, err := s.client.NewRequest(http.MethodGet, u, nil, options)
 	if err != nil {
@@ -90,4 +91,47 @@ func (s *WorkflowService) GetWorkflow(pid interface{}, options ...RequestOptionF
 	}
 
 	return r.Workflow, resp, err
+}
+
+func (s *WorkflowService) SetGlobalExclusions(groups []string, users []string) (err error) {
+	var workflow *Workflow
+	if workflow, _, err = s.GetWorkflow(0); err != nil {
+		return
+	}
+
+	swarmGroups := make([]string, 0)
+	for _, group := range groups {
+		swarmGroups = append(swarmGroups, "swarm-group-"+group)
+	}
+	workflow.GroupExclusion.Rule = swarmGroups
+	workflow.UserExclusion.Rule = users
+
+	if err = s.updateWorkflow(0, workflow); err != nil {
+		return
+	}
+
+	return
+}
+
+func (s *WorkflowService) updateWorkflow(pid interface{}, workflow *Workflow) (err error) {
+	var (
+		flowId string
+		req    *retryablehttp.Request
+	)
+	flowId, err = parseID(pid)
+	if err != nil {
+		return
+	}
+	u := fmt.Sprintf("workflows/%s", PathEscape(flowId))
+
+	if req, err = s.client.NewRequest(http.MethodPut, u, workflow, nil); err != nil {
+		return
+	}
+	var r *struct {
+		Workflows []*Workflow `json:"workflows"`
+	}
+	if _, err = s.client.Do(req, &r); err != nil {
+		return
+	}
+	return
 }
