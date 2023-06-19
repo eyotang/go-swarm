@@ -27,9 +27,15 @@ func setup(t *testing.T) (*http.ServeMux, *httptest.Server, *Client) {
 
 	// server is a test HTTP server used to provide mock API responses.
 	server := httptest.NewServer(mux)
+	username := os.Getenv("USERNAME")
+	password := os.Getenv("PASSWORD")
+	url := os.Getenv("URL")
+	if len(url) > 0 {
+		server.URL = url
+	}
 
 	// client is the Gitlab client being tested.
-	client, err := NewBasicAuthClient("abc", "123", WithBaseURL(server.URL))
+	client, err := NewBasicAuthClient(username, password, WithBaseURL(server.URL))
 	if err != nil {
 		server.Close()
 		t.Fatalf("Failed to create client: %v", err)
@@ -93,7 +99,7 @@ func TestNewBasicAuthClient(t *testing.T) {
 	Convey("test NewBasicAuthClient", t, func() {
 		var (
 			c, err          = NewBasicAuthClient("", "")
-			expectedBaseURL = defaultBaseURL + apiVersionPath
+			expectedBaseURL = defaultBaseURL + apiV9Path
 		)
 		So(err, ShouldBeNil)
 		So(c, ShouldNotBeNil)

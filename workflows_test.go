@@ -3,6 +3,7 @@ package swarm
 import (
 	"fmt"
 	"net/http"
+	"os"
 	"testing"
 
 	. "github.com/smartystreets/goconvey/convey"
@@ -260,5 +261,50 @@ func TestWorkflowsService_GetWorkflow3(t *testing.T) {
 		}
 
 		So(workflow, ShouldResemble, want)
+	})
+}
+
+func TestWorkflowsService_SetGlobalWorkflow(t *testing.T) {
+	Convey("test WorkflowsService_SetGlobalWorkflow", t, func() {
+		username := os.Getenv("USERNAME")
+		password := os.Getenv("PASSWORD")
+		url := os.Getenv("URL")
+
+		// client is the Gitlab client being tested.
+		client, err := NewBasicAuthClient(username, password, WithBaseURL(url))
+
+		group := "swarm-group-ad-技术中心>测试开发"
+		user := "tangyongqiang"
+		user2 := "swarm"
+
+		// 获取Global Workflow
+		workflow, _, err := client.Workflows.GetWorkflow(0)
+		So(err, ShouldBeNil)
+
+		want := &Workflow{
+			ID:          0,
+			Name:        "Global Workflow",
+			Description: "",
+			Shared:      false,
+			Owners:      []string{"root", "swarm", "tangyongqiang"},
+			OnSubmit: OnSubmit{
+				WithReview:    ReviewRule{Rule: "no_checking", Mode: "default"},
+				WithoutReview: ReviewRule{Rule: "no_checking", Mode: "default"},
+			},
+			EndRules: EndRule{
+				Update: ReviewRule{Rule: "no_checking", Mode: "default"},
+			},
+			AutoApprove:    ReviewRule{Rule: "never", Mode: "default"},
+			CountedVotes:   ReviewRule{Rule: "anyone", Mode: "default"},
+			GroupExclusion: ReviewRule{Rule: []interface{}{group}, Mode: "policy"},
+			UserExclusion:  ReviewRule{Rule: []interface{}{user}, Mode: "policy"},
+		}
+
+		So(workflow, ShouldResemble, want)
+
+		// 设置Global Workflow
+
+		err = client.Workflows.SetGlobalExclusions([]string{group}, []string{user, user2})
+		So(err, ShouldBeNil)
 	})
 }

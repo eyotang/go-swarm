@@ -122,13 +122,18 @@ func (s *WorkflowService) updateWorkflow(pid interface{}, workflow *Workflow) (e
 	if err != nil {
 		return
 	}
-	u := fmt.Sprintf("workflows/%s", PathEscape(flowId))
+	u := fmt.Sprintf(apiV10Path+"workflows/%s", PathEscape(flowId))
+	if len(workflow.Description) <= 0 {
+		workflow.Description = "Updated by v10 api."
+	}
 
 	if req, err = s.client.NewRequest(http.MethodPut, u, workflow, nil); err != nil {
 		return
 	}
 	var r *struct {
-		Workflows []*Workflow `json:"workflows"`
+		Data *struct {
+			Workflows []*Workflow `json:"workflows"`
+		} `json:"data"`
 	}
 	if _, err = s.client.Do(req, &r); err != nil {
 		return

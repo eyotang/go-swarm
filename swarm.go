@@ -25,7 +25,8 @@ import (
 
 const (
 	defaultBaseURL = "https://myswarm.url/"
-	apiVersionPath = "api/v9/"
+	apiV9Path      = "api/v9/"
+	apiV10Path     = "api/v10/"
 
 	headerRateLimit = "RateLimit-Limit"
 	headerRateReset = "RateLimit-Reset"
@@ -260,8 +261,8 @@ func (c *Client) setBaseURL(urlStr string) error {
 		return err
 	}
 
-	if !strings.HasSuffix(baseURL.Path, apiVersionPath) {
-		baseURL.Path += apiVersionPath
+	if !strings.HasSuffix(baseURL.Path, apiV9Path) {
+		baseURL.Path += apiV9Path
 	}
 
 	// Update the base URL of the client.
@@ -283,6 +284,9 @@ func (c *Client) NewRequest(method, path string, opt interface{}, options []Requ
 	}
 
 	// Set the encoded path data
+	if strings.HasPrefix(path, apiV10Path) {
+		c.baseURL.Path = strings.TrimSuffix(c.baseURL.Path, apiV9Path)
+	}
 	u.RawPath = c.baseURL.Path + path
 	u.Path = c.baseURL.Path + unescaped
 
@@ -301,12 +305,6 @@ func (c *Client) NewRequest(method, path string, opt interface{}, options []Requ
 				return nil, err
 			}
 			//fmt.Println(string(body.([]byte)))
-			//if q, err := query.Values(opt); err != nil {
-			//	return nil, err
-			//} else {
-			//	encodedStr := q.Encode()
-			//	body = []byte(encodedStr)
-			//}
 		}
 
 	case opt != nil:
