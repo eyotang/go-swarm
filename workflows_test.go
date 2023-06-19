@@ -273,7 +273,7 @@ func TestWorkflowsService_SetGlobalWorkflow(t *testing.T) {
 		// client is the Gitlab client being tested.
 		client, err := NewBasicAuthClient(username, password, WithBaseURL(url))
 
-		group := "swarm-group-ad-技术中心>测试开发"
+		group := "swarm-group-Admin"
 		user := "tangyongqiang"
 		user2 := "swarm"
 
@@ -284,7 +284,7 @@ func TestWorkflowsService_SetGlobalWorkflow(t *testing.T) {
 		want := &Workflow{
 			ID:          0,
 			Name:        "Global Workflow",
-			Description: "",
+			Description: "Updated by v10 api.",
 			Shared:      false,
 			Owners:      []string{"root", "swarm", "tangyongqiang"},
 			OnSubmit: OnSubmit{
