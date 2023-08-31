@@ -98,12 +98,13 @@ type CreateProjectOptions struct {
 }
 
 type BranchOptions struct {
-	ID         *string          `query:"id"`
-	Name       *string          `query:"name"`
-	Workflow   *string          `query:"workflow"`
-	Paths      *string          `query:"paths"`
-	Defaults   *DefaultsOptions `query:"defaults"`
-	Moderators []*string        `query:"moderators"`
+	ID              *string          `query:"id"`
+	Name            *string          `query:"name"`
+	Workflow        *string          `query:"workflow"`
+	Paths           *string          `query:"paths"`
+	Defaults        *DefaultsOptions `query:"defaults"`
+	Moderators      []*string        `query:"moderators"`
+	ModeratorGroups []*string        `query:"moderators-groups"`
 }
 
 type DefaultsOptions struct {
