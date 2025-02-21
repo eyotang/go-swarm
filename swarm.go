@@ -304,6 +304,14 @@ func (c *Client) NewRequest(method, path string, opt interface{}, options []Requ
 			if body, err = encoder.Marshal(opt); err != nil {
 				return nil, err
 			}
+			// 特殊处理branches逻辑
+			if projectOpts, assetOpts := opt.(*UpdateProjectOptions); assetOpts {
+				if len(projectOpts.Branches) == 0 && projectOpts.Branches != nil {
+					if byteBody, assetByte := body.([]byte); assetByte {
+						body = []byte(string(byteBody) + "&branches=[]")
+					}
+				}
+			}
 			//fmt.Println(string(body.([]byte)))
 		}
 
