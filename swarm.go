@@ -308,7 +308,7 @@ func (c *Client) NewRequest(method, path string, opt interface{}, options []Requ
 			if projectOpts, assetOpts := opt.(*UpdateProjectOptions); assetOpts {
 				if len(projectOpts.Branches) == 0 && projectOpts.Branches != nil {
 					if byteBody, assetByte := body.([]byte); assetByte {
-						body = []byte(string(byteBody) + "&branches=[]")
+						body = []byte(string(byteBody) + "&branches=")
 					}
 				}
 			}
